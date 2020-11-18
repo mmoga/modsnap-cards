@@ -10,12 +10,13 @@
  * @package modsnap-custom-cards
  */
 
-// function modsnap_movie_styles()
-// {
-//   wp_enqueue_style("movies", plugin_dir_url(__FILE__) . "/css/movies.css");
-// }
+add_action("wp_enqueue_scripts", "modsnap_cards_external");
+function modsnap_cards_external()
+{
+  wp_enqueue_style("modsnap-cards", plugin_dir_url(__FILE__) . "/css/ms-cards.css");
+  wp_enqueue_script("modsnap-cards", plugin_dir_url(__FILE__) . "/js/drawer.js");
+}
 
-// add_action("wp_enqueue_scripts", "modsnap_movie_styles");
 
 /*add_action("wp_footer", "mfp_Add_Text");
 function mfp_Add_Text()
@@ -27,7 +28,7 @@ function mfp_Add_Text()
     while ($query->have_posts()) {
       $query->the_post(); ?>
 <div>
-    <?php the_post_thumbnail("thumbnail"); ?>
+  <?php the_post_thumbnail("thumbnail"); ?>
 </div>
 <?php
     }
@@ -148,7 +149,7 @@ function modsnap_register_taxonomy()
 
   register_taxonomy("modsnap_category", ["modsnap_card"], $args);
 }
-
+/*
 // Hook our custom function to the pre_get_posts action hook
 add_action("pre_get_posts", "add_article_to_frontpage");
 // Alter the main query
@@ -159,6 +160,7 @@ function add_article_to_frontpage($query)
   }
   return $query;
 }
+*/
 
 /**
  * Setup query to show the ‘services’ post type with all posts filtered by 'home' category.
@@ -188,35 +190,56 @@ function add_article_to_frontpage($query)
 
 // wp_reset_postdata();
 
+// add_action('after_setup_theme', 'modsnap_resize_img');
+// function modsnap_resize_img() {
+//   add_image_size( 'ms-grid-card', 220, 220, array( 'center', 'center' ) );
+// }
+
 add_action("wp_footer", "modsnap_test_footer");
 function modsnap_test_footer()
 {
   $args = [
     "post_type" => "modsnap_card",
     "post_status" => "publish",
-    "posts_per_page" => 3,
+    // Do you want to add a limit?
+    // "posts_per_page" => 3,
   ];
   $the_query = new WP_Query($args);
-
-  if ($the_query->have_posts()) {
-    while ($the_query->have_posts()) {
-
-      $the_query->the_post();
-      $featured_img_url = get_the_post_thumbnail_url(get_the_ID(), "full");
-      ?>
-<div>
-    <?php if (
-      get_the_post_thumbnail()
-    ):/* Show the featured image if there is one */  ?>
-    <img src="<?php echo esc_url(
-      $featured_img_url
-    ); ?>" alt="" width="300" height="300" />
-    <?php endif; ?>
-    <h2><?php the_title(); ?></h2>
-    <?php the_content(); ?>
+  
+  if ($the_query->have_posts()) { ?>
+<div class="ms-cards__container">
+  <div class="ms-cards__wrapper">
+    <?php
+        while ($the_query->have_posts()) {
+    
+          $the_query->the_post();
+          $featured_img_url = get_the_post_thumbnail_url(get_the_ID(), "medium");
+          
+          ?>
+    <div class="ms-card">
+      <?php if (
+          get_the_post_thumbnail()
+        ):/* Show the featured image if there is one */  ?>
+      <figure>
+        <img src="<?php echo esc_url(
+            $featured_img_url
+          ); ?>" alt="" width="300" height="300" />
+        <figcaption>
+          <h3><?php the_title(); ?></h3>
+          <p>Something goes here</p>
+        </figcaption>
+      </figure>
+      <?php endif; ?>
+      <div class="ms-card-details">
+        <h3><?php the_title(); ?></h3>
+        <?php the_content(); ?>
+      </div>
+    </div>
+    <?php
+        } ?>
+  </div>
 </div>
 <?php
-    }
   }
 
   wp_reset_postdata();

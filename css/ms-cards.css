@@ -1,0 +1,36 @@
+.ms-cards__container {
+  padding: 3rem;
+}
+
+.ms-cards__container > .ms-cards__wrapper {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  /* grid-auto-rows: 100px; */
+  grid-gap: 20px;
+}
+
+.ms-cards__container > .ms-cards__wrapper figure {
+  position: relative;
+}
+
+.ms-cards__container > .ms-cards__wrapper figure > img {
+  width: 100%;
+}
+
+.ms-cards__container > .ms-cards__wrapper figure > figcaption {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 2rem;
+  background: #1f1f1f6c;
+  color: white;
+}
+
+.ms-cards__container > .ms-cards__wrapper figure > figcaption h3 {
+  font-size: 18px;
+  margin: 0 0 1rem;
+}
+
+.ms-cards__container > .ms-cards__wrapper .ms-card-details {
+  display: none;
+}

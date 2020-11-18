@@ -15,15 +15,9 @@
 //   wp_enqueue_style("movies", plugin_dir_url(__FILE__) . "/css/movies.css");
 // }
 
-// Here's what's going on
 // add_action("wp_enqueue_scripts", "modsnap_movie_styles");
 
-add_action("init", "modsnap_register_post_type");
-
-add_action("init", "modsnap_register_taxonomy");
-
-add_action("wp_footer", "mfp_Add_Text");
-
+/*add_action("wp_footer", "mfp_Add_Text");
 function mfp_Add_Text()
 {
   echo "<p>TEST</p>";
@@ -39,14 +33,15 @@ function mfp_Add_Text()
     }
     echo "</div>";
   }
-}
+}*/
 // Register card post type
+add_action("init", "modsnap_register_post_type");
 function modsnap_register_post_type()
 {
   $labels = [
     "name" => __("Cards"),
     "singular_name" => __("Card"),
-    "add_new" => __("Add New", "card"),
+    "add_new" => __("Add New", "modsnap-cards"),
     "add_new_item" => __("Add New Card"),
     "featured_image" => "Card Image",
     "set_featured_image" => "Add Card Image",
@@ -114,8 +109,19 @@ function modsnap_card_column($column, $post_id)
   if ("featured_image" === $column) {
     echo get_the_post_thumbnail($post_id, [80, 80]);
   }
+  // Subheader column
+  if ("subheader" === $column) {
+    $price = get_post_meta($post_id, "price_per_month", true);
+
+    if (!$price) {
+      _e("n/a");
+    } else {
+      echo '$ ' . number_format($price, 0, ".", ",") . " p/m";
+    }
+  }
 }
 
+add_action("init", "modsnap_register_taxonomy");
 function modsnap_register_taxonomy()
 {
   $labels = [
@@ -143,11 +149,6 @@ function modsnap_register_taxonomy()
   register_taxonomy("modsnap_category", ["modsnap_card"], $args);
 }
 
-//   function add_post_thumbnails() {
-//       add_theme_support('post-thumbnails', array('modsnap_card'));
-//   }
-//   add_action('after_setup_theme', 'add_post_thumbnails');
-
 // Hook our custom function to the pre_get_posts action hook
 add_action("pre_get_posts", "add_article_to_frontpage");
 // Alter the main query
@@ -157,4 +158,66 @@ function add_article_to_frontpage($query)
     $query->set("post_type", ["post", "modsnap_card"]);
   }
   return $query;
+}
+
+/**
+ * Setup query to show the ‘services’ post type with all posts filtered by 'home' category.
+ * Output is linked title with featured image and excerpt.
+ */
+
+// $args = [
+//   "post_type" => "modsnap_card",
+//   "post_status" => "publish",
+//   "posts_per_page" => -1,
+//   "orderby" => "title",
+//   "order" => "ASC",
+//   //   "cat" => "home",
+// ];
+
+// $loop = new WP_Query($args);
+
+// while ($loop->have_posts()):
+//   $loop->the_post();
+//   $featured_img = wp_get_attachment_image_src($post->ID);
+//   print the_title();
+//   // if ( $feature_img ) {
+//   //    < img src="print $featured_img['url']" width=”print $featured_img['width']" height="print $featured_img['height']" />
+//   // }
+//   the_content();
+// endwhile;
+
+// wp_reset_postdata();
+
+add_action("wp_footer", "modsnap_test_footer");
+function modsnap_test_footer()
+{
+  $args = [
+    "post_type" => "modsnap_card",
+    "post_status" => "publish",
+    "posts_per_page" => 3,
+  ];
+  $the_query = new WP_Query($args);
+
+  if ($the_query->have_posts()) {
+    while ($the_query->have_posts()) {
+
+      $the_query->the_post();
+      $featured_img_url = get_the_post_thumbnail_url(get_the_ID(), "full");
+      ?>
+<div>
+    <?php if (
+      get_the_post_thumbnail()
+    ):/* Show the featured image if there is one */  ?>
+    <img src="<?php echo esc_url(
+      $featured_img_url
+    ); ?>" alt="" width="300" height="300" />
+    <?php endif; ?>
+    <h2><?php the_title(); ?></h2>
+    <?php the_content(); ?>
+</div>
+<?php
+    }
+  }
+
+  wp_reset_postdata();
 }

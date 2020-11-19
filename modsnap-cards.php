@@ -13,10 +13,15 @@
 add_action("wp_enqueue_scripts", "modsnap_cards_external");
 function modsnap_cards_external()
 {
-  wp_enqueue_style("modsnap-cards", plugin_dir_url(__FILE__) . "/css/ms-cards.css");
-  wp_enqueue_script("modsnap-cards", plugin_dir_url(__FILE__) . "/js/drawer.js");
+  wp_enqueue_style(
+    "modsnap-cards",
+    plugin_dir_url(__FILE__) . "/css/ms-cards.css"
+  );
+  wp_enqueue_script(
+    "modsnap-cards",
+    plugin_dir_url(__FILE__) . "/js/drawer.js"
+  );
 }
-
 
 /*add_action("wp_footer", "mfp_Add_Text");
 function mfp_Add_Text()
@@ -28,7 +33,7 @@ function mfp_Add_Text()
     while ($query->have_posts()) {
       $query->the_post(); ?>
 <div>
-  <?php the_post_thumbnail("thumbnail"); ?>
+    <?php the_post_thumbnail("thumbnail"); ?>
 </div>
 <?php
     }
@@ -205,42 +210,75 @@ function modsnap_test_footer()
     // "posts_per_page" => 3,
   ];
   $the_query = new WP_Query($args);
-  
+
   if ($the_query->have_posts()) { ?>
 <div class="ms-cards__container">
-  <div class="ms-cards__wrapper">
-    <?php
-        while ($the_query->have_posts()) {
-    
+    <div class="ms-cards__wrapper">
+        <?php while ($the_query->have_posts()) {
+
           $the_query->the_post();
-          $featured_img_url = get_the_post_thumbnail_url(get_the_ID(), "medium");
-          
+          $featured_img_url = get_the_post_thumbnail_url(
+            get_the_ID(),
+            "medium"
+          );
           ?>
-    <div class="ms-card">
-      <?php if (
-          get_the_post_thumbnail()
-        ):/* Show the featured image if there is one */  ?>
-      <figure>
-        <img src="<?php echo esc_url(
-            $featured_img_url
-          ); ?>" alt="" width="300" height="300" />
-        <figcaption>
-          <h3><?php the_title(); ?></h3>
-          <p>Something goes here</p>
-        </figcaption>
-      </figure>
-      <?php endif; ?>
-      <div class="ms-card-details">
-        <h3><?php the_title(); ?></h3>
-        <?php the_content(); ?>
-      </div>
-    </div>
-    <?php
+        <div class="ms-card">
+            <?php if (
+              get_the_post_thumbnail()
+            ):/* Show the featured image if there is one */  ?>
+            <figure>
+                <img src="<?php echo esc_url(
+                  $featured_img_url
+                ); ?>" alt="" width="300" height="300" />
+                <figcaption>
+                    <h3><?php the_title(); ?></h3>
+                    <p>Something goes here</p>
+                </figcaption>
+            </figure>
+            <?php endif; ?>
+            <div class="ms-card-details">
+                <h3><?php the_title(); ?></h3>
+                <?php the_content(); ?>
+            </div>
+        </div>
+        <?php
         } ?>
-  </div>
+    </div>
 </div>
-<?php
-  }
+<?php }
 
   wp_reset_postdata();
 }
+
+// https://calderaforms.com/2019/01/convert-shortcode-gutenberg-block/
+/**
+ * Handler for [modsnap-cards] shortcode
+ *
+ * @param $atts
+ *
+ * @return string
+ */
+// function modsnap_cards_shortcode_handler($atts)
+// {
+// 	$atts = shortcode_atts([
+// 		'id' => 0,
+// 		'heading' => 'h3',
+// 	], $atts, 'cl_post_title');
+
+// 	return modsnap_test_footer($atts[ 'id' ], $atts[ 'heading' ]);
+// }
+
+add_shortcode("modsnap_cards_grid", "modsnap_test_footer");
+
+// Add Gutenberg block
+function modsnap_loadMyBlock()
+{
+  wp_enqueue_script(
+    "modsnap-cards-block",
+    plugin_dir_url(__FILE__) . "/js/ms-cards-block.js",
+    ["wp-blocks", "wp-editor"],
+    true
+  );
+}
+
+add_action("enqueue_block_editor_assets", "modsnap_loadMyBlock");

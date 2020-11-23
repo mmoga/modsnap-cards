@@ -7,7 +7,7 @@ module.exports = {
     'modsnap-cards-block': './src/js/ms-cards-block.js',
   },
   output: {
-    path: path.join(__dirname, '/js/'),
+    path: path.join(__dirname, './build/js/'),
     filename: '[name].js',
   },
 };

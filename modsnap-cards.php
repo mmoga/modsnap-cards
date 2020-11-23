@@ -276,7 +276,7 @@ function modsnap_loadBlock()
 {
   wp_enqueue_script(
     "modsnap-cards-block",
-    plugin_dir_url(__FILE__) . "/js/modsnap-cards-block.js",
+    plugin_dir_url(__FILE__) . "/build/js/modsnap-cards-block.js",
     ["wp-blocks", "wp-editor"],
     true
   );

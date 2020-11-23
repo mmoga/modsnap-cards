@@ -4,13 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "run build",
+    "build": "wp-scripts build",
     "lint:js": "run lint:js",
     "lint:pkg-json": "wp-scripts lint-pkg-json ./package.json ./*-esnext/package.json",
     "format:js": "wp-scripts format-js",
     "lint:js:fix": "npm run lint:js -- --fix",
     "test": "wp-scripts test-unit-js",
-    "start": "docker-compose up -d",
+    "start": "wp-scripts start",
     "stop": "docker-compose stop",
     "packages-update": "wp-scripts packages-update"
   },
@@ -25,6 +25,9 @@
   },
   "homepage": "https://github.com/mmoga-uf/modsnap-cards#readme",
   "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
+    "@babel/preset-env": "^7.12.7",
+    "@babel/preset-react": "^7.12.7",
     "@prettier/plugin-php": "^0.16.0",
     "@wordpress/components": "^9.5.0",
     "@wordpress/scripts": "^9.0.0",

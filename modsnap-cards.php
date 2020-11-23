@@ -271,14 +271,13 @@ function modsnap_test_footer()
 add_shortcode("modsnap_cards_grid", "modsnap_test_footer");
 
 // Add Gutenberg block
-function modsnap_loadMyBlock()
+add_action("init", "modsnap_loadBlock");
+function modsnap_loadBlock()
 {
   wp_enqueue_script(
     "modsnap-cards-block",
-    plugin_dir_url(__FILE__) . "/js/ms-cards-block.js",
+    plugin_dir_url(__FILE__) . "/js/modsnap-cards-block.js",
     ["wp-blocks", "wp-editor"],
     true
   );
 }
-
-add_action("enqueue_block_editor_assets", "modsnap_loadMyBlock");
